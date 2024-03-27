@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "../../styles/home.module.css";
+import { IMAGE_PATHS } from "./constant";
 
 export default function Home() {
   const [weight, setWeight] = useState<number | undefined>(undefined);
@@ -11,38 +12,33 @@ export default function Home() {
   const [showImage, setShowImage] = useState<boolean>(false); // 이미지 표시 여부 상태 관리
   const [imageNumber, setImageNumber] = useState<number>(1); // 랜덤 이미지 번호 상태 추가
   const [imgSrc, setImgSrc] = useState<string>("/assets/grade1"); // 이미지 소스 상태 추가
-  useEffect(() => {
-    // 페이지 로드 시 실행될 로직
-    resetTest(); // 모든 상태를 초기화하는 함수 호출
-  }, []); // 빈 의존성 배열을 전달하여 컴포넌트 마운트 시 단 한 번만 실행되도록 함
-  useEffect(() => {
-    // imgSrc 상태가 변경될 때마다 실행될 부수 효과
-    let randLength = 0;
+  // 초기 상태 설정 및 랜덤 이미지 번호 설정
+  useEffect(() => resetTest(), []);
 
+  // imgSrc 변경 시 랜덤 이미지 번호 업데이트
+  useEffect(() => updateRandomImageNumber(), [showImage]);
+
+  function updateRandomImageNumber() {
+    const randLength = getRandLength();
+    console.log(randLength);
+    setImageNumber(Math.floor(Math.random() * randLength) + 1);
+  }
+  function getRandLength() {
     switch (imgSrc) {
       case "/assets/grade1":
-        randLength = 9;
-        break;
+        return 9;
       case "/assets/grade4":
       case "/assets/grade5":
-        randLength = 2;
-        break;
+        return 2;
       case "/assets/grade6":
-        randLength = 3;
-        break;
+        return 3;
       case "/assets/grade4_1":
       case "/assets/grade4_2":
-        randLength = 4;
-        break;
+        return 4;
       default:
-        randLength = 1; // 기본값 설정, imgSrc가 위의 어떤 경우에도 해당하지 않을 때
+        return 1; // Default case
     }
-
-    const randomNumber = Math.floor(Math.random() * randLength) + 1;
-    // 상태 업데이트 함수는 비동기적으로 동작하지만, 여기서는 상태의 의존성 없이 직접 값을 설정하므로 문제 없음
-
-    setImageNumber(randomNumber); // 랜덤 이미지 번호 설정
-  }, [imgSrc]); // imgSrc가 변경될 때마다 useEffect 훅 실행
+  }
 
   // 급수에 따른 추가 설명을 반환하는 함수
 
@@ -61,110 +57,97 @@ export default function Home() {
       case 6:
         return "병역면제";
       default:
-        return ""; // 해당 없음
+        return "재검"; // 해당 없음
     }
   };
 
   // BMI 계산 및 급수 판별 함수
   const calculateBMI = () => {
-    setShowImage(true); // 계산하기 버튼 클릭 시 이미지 표시
-    // 계산하기 버튼을 클릭할 때마다 새로운 랜덤 이미지 번호를 설정
-
+    let tempGrade: number | null = null;
+    let tempBMI: number | null = null;
+    let tempImgSrc: string | null = null;
     // 키를 기준으로 한 급수 판정
     if (height >= 204.0) {
-      setGrade(4);
-      setBmi(null); // BMI 계산을 무시
-      setImgSrc("/assets/grade4");
+      tempGrade = 4;
+      tempImgSrc = IMAGE_PATHS["GRADE4"];
+      setValue(tempGrade, tempImgSrc);
       return; // 함수 종료
     } else if (height >= 146.0 && height < 159.0) {
-      setGrade(4);
-      setBmi(null);
-      setImgSrc("/assets/grade4");
+      tempGrade = 4;
+      tempImgSrc = IMAGE_PATHS["GRADE4"];
+      setValue(tempGrade, tempImgSrc);
       return;
     } else if (height >= 140.1 && height < 146.0) {
-      setGrade(5);
-      setBmi(null);
-      setImgSrc("/assets/grade5");
+      tempGrade = 5;
+
+      tempImgSrc = IMAGE_PATHS["GRADE5"];
+      setValue(tempGrade, tempImgSrc);
       return;
     } else if (height <= 140.0) {
-      setGrade(6);
-      setBmi(null);
-      setImgSrc("/assets/grade6");
+      tempGrade = 6;
+
+      tempImgSrc = IMAGE_PATHS["GRADE6"];
+      setValue(tempGrade, tempImgSrc);
       return;
+    } else {
+      tempGrade = 7;
+      tempImgSrc = IMAGE_PATHS["GRADE6"];
+      setValue(tempGrade, tempImgSrc);
     }
 
     // BMI 계산
     if (weight && height) {
       const bmiValue = weight / ((height / 100) * (height / 100)); // cm를 m로 변환 후 BMI 계산
       const bmiParse2 = parseFloat(bmiValue.toFixed(2));
-      setBmi(bmiParse2); // 계산된 BMI를 소수점 두 자리까지 설정
 
       // BMI를 기준으로 한 급수 판별(소수 둘째자리에 버림)
-      const bmiRounded = Math.floor(bmiValue);
-      if (bmiRounded >= 20 && bmiRounded <= 24.9) {
-        setGrade(1);
-        setImgSrc("/assets/grade1");
+
+      if (bmiParse2 >= 20 && bmiParse2 <= 24.9) {
+        tempGrade = 1;
+        tempImgSrc = IMAGE_PATHS["GRADE1"];
       } else if (
-        (bmiRounded >= 18.5 && bmiRounded <= 19.9) ||
-        (bmiRounded >= 25 && bmiRounded <= 29.9)
+        (bmiParse2 >= 18.5 && bmiParse2 <= 19.9) ||
+        (bmiParse2 >= 25 && bmiParse2 <= 29.9)
       ) {
-        setGrade(2);
-        setImgSrc("/assets/grade1");
+        tempGrade = 2;
+        tempImgSrc = IMAGE_PATHS["GRADE1"];
       } else if (
-        (bmiRounded >= 15 && bmiRounded <= 18.4) ||
-        (bmiRounded >= 30 && bmiRounded <= 39.9)
+        (bmiParse2 >= 15 && bmiParse2 <= 18.4) ||
+        (bmiParse2 >= 30 && bmiParse2 <= 39.9)
       ) {
-        setGrade(3);
-        setImgSrc("/assets/grade1");
-      } else if (bmiRounded < 15 || bmiRounded >= 40) {
-        setGrade(4);
-        if (bmiRounded < 15) {
+        tempGrade = 3;
+        tempImgSrc = IMAGE_PATHS["GRADE1"];
+      } else if (bmiParse2 < 15 || bmiParse2 >= 40) {
+        tempGrade = 4;
+        if (bmiParse2 < 15) {
           //멸공
-          setImgSrc("/assets/grade4_1");
+          tempImgSrc = IMAGE_PATHS["GRADE4_1"];
         } else {
           //돼공
-          setImgSrc("/assets/grade4_2");
+          tempImgSrc = IMAGE_PATHS["GRADE4_2"];
         }
       } else {
-        setGrade(null); // 예외 상황 처리
+        tempGrade = 7;
       }
     }
-
-    let randLength = 0;
-
-    switch (imgSrc) {
-      case "/assets/grade1":
-        randLength = 9;
-        break;
-      case "/assets/grade4":
-      case "/assets/grade5":
-        randLength = 2;
-        break;
-      case "/assets/grade6":
-        randLength = 3;
-        break;
-      case "/assets/grade4_1":
-      case "/assets/grade4_2":
-        randLength = 4;
-        break;
-      default:
-        randLength = 1; // 기본값 설정, imgSrc가 위의 어떤 경우에도 해당하지 않을 때
-    }
-
-    const randomNumber = Math.floor(Math.random() * randLength) + 1;
+    setValue(tempGrade, tempImgSrc);
   };
+
+  function setValue(grade: number, imgSrc: string) {
+    setShowImage(true); // 계산하기 버튼 클릭 시 이미지 표시
+    setGrade(grade);
+    setImgSrc(imgSrc);
+  }
 
   // 모든 상태를 초기화하는 함수
   const resetTest = () => {
-    setWeight(null);
-    setHeight(null);
+    setWeight(undefined);
+    setHeight(undefined);
     setBmi(null);
     setGrade(null);
     setShowImage(false);
     setImageNumber(1);
     setImgSrc("/assets/grade1");
-
-    console.log("showImage", showImage);
   };
 
   return (
@@ -172,7 +155,7 @@ export default function Home() {
       {showImage && (
         // 이미지 컴포넌트 또는 img 태그
         <img
-          src={`${imgSrc}/${imageNumber}.jpg`}
+          src={`${imgSrc}/${imageNumber}.webp`}
           alt="결과 이미지"
           style={{ maxWidth: "100%", height: "auto" }}
         />
