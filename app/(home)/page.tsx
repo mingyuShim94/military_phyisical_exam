@@ -7,24 +7,24 @@ import { IMAGE_PATHS } from "./constant";
 export default function Home() {
   const [weight, setWeight] = useState<number | undefined>(undefined);
   const [height, setHeight] = useState<number | undefined>(undefined);
-  const [bmi, setBmi] = useState<number | null>(null);
-  const [grade, setGrade] = useState<number | null>(null); // 급수 상태 관리
+  const [bmi, setBmi] = useState<number | undefined>(undefined);
+  const [grade, setGrade] = useState<number | undefined>(undefined); // 급수 상태 관리
   const [showImage, setShowImage] = useState<boolean>(false); // 이미지 표시 여부 상태 관리
-  const [imageNumber, setImageNumber] = useState<number>(1); // 랜덤 이미지 번호 상태 추가
-  const [imgSrc, setImgSrc] = useState<string>("/assets/grade1"); // 이미지 소스 상태 추가
+  const [imageNumber, setImageNumber] = useState<number | undefined>(undefined); // 랜덤 이미지 번호 상태 추가
+  const [imgSrc, setImgSrc] = useState<string | undefined>(undefined); // 이미지 소스 상태 추가
   // 초기 상태 설정 및 랜덤 이미지 번호 설정
   useEffect(() => resetTest(), []);
 
   // imgSrc 변경 시 랜덤 이미지 번호 업데이트
-  useEffect(() => updateRandomImageNumber(), [showImage]);
+  // useEffect(() => updateRandomImageNumber(), [showImage]);
 
-  function updateRandomImageNumber() {
-    const randLength = getRandLength();
-    console.log(randLength);
+  // function updateRandomImageNumber() {
+  //   const randLength = getRandLength();
+  //   console.log(randLength);
 
-    setImageNumber(Math.floor(Math.random() * randLength) + 1);
-  }
-  function getRandLength() {
+  //   setImageNumber(Math.floor(Math.random() * randLength) + 1);
+  // }
+  function getImgSrcLength(imgSrc: string) {
     switch (imgSrc) {
       case "/assets/grade1":
         return 9;
@@ -72,28 +72,21 @@ export default function Home() {
     if (height >= 204.0) {
       tempGrade = 4;
       tempImgSrc = IMAGE_PATHS["GRADE4"];
-      setValue(tempGrade, tempImgSrc);
-      return; // 함수 종료
     } else if (height >= 146.0 && height < 159.0) {
       tempGrade = 4;
       tempImgSrc = IMAGE_PATHS["GRADE4"];
-      setValue(tempGrade, tempImgSrc);
-      return;
     } else if (height >= 140.1 && height < 146.0) {
       tempGrade = 5;
 
       tempImgSrc = IMAGE_PATHS["GRADE5"];
-      setValue(tempGrade, tempImgSrc);
-      return;
     } else if (height <= 140.0) {
       tempGrade = 6;
 
       tempImgSrc = IMAGE_PATHS["GRADE6"];
-      setValue(tempGrade, tempImgSrc);
-      return;
     } else {
       // BMI 계산
       if (weight && height) {
+        console.log("BMI 계산");
         const bmiValue = weight / ((height / 100) * (height / 100)); // cm를 m로 변환 후 BMI 계산
         const bmiParse2 = parseFloat(bmiValue.toFixed(2));
 
@@ -132,21 +125,34 @@ export default function Home() {
     setValue(tempGrade, tempImgSrc);
   };
 
-  function setValue(grade: number, imgSrc: string) {
-    setShowImage(true); // 계산하기 버튼 클릭 시 이미지 표시
+  // function setValue(grade: number, imgSrc: string) {
+  //   console.log("grade:", grade, "imgSrc:", imgSrc);
+  //   setGrade(grade);
+  //   setImgSrc(imgSrc);
+  //   updateRandomImageNumber(); // 이미지 번호 업데이트
+  //   setShowImage(true); // 계산하기 버튼 클릭 시 이미지 표시
+  // }
+
+  const setValue = (grade: number, imgSrc: string) => {
+    console.log("getValue", grade, imgSrc);
+    const randLength: number = getImgSrcLength(imgSrc);
+    console.log("randLength", randLength);
+    const randNum: number = Math.floor(Math.random() * randLength) + 1;
+    setImageNumber(randNum);
     setGrade(grade);
     setImgSrc(imgSrc);
-  }
+    setShowImage(true);
+  };
 
   // 모든 상태를 초기화하는 함수
   const resetTest = () => {
+    setShowImage(false);
     setWeight(undefined);
     setHeight(undefined);
-    setBmi(null);
-    setGrade(null);
-    setShowImage(false);
-    // setImageNumber(1);
-    setImgSrc("/assets/grade1");
+    setBmi(undefined);
+    setGrade(undefined);
+    setImageNumber(undefined);
+    setImgSrc(undefined);
   };
 
   return (
