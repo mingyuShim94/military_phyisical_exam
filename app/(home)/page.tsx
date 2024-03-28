@@ -21,6 +21,7 @@ export default function Home() {
   function updateRandomImageNumber() {
     const randLength = getRandLength();
     console.log(randLength);
+
     setImageNumber(Math.floor(Math.random() * randLength) + 1);
   }
   function getRandLength() {
@@ -33,8 +34,9 @@ export default function Home() {
       case "/assets/grade6":
         return 3;
       case "/assets/grade4_1":
-      case "/assets/grade4_2":
         return 4;
+      case "/assets/grade4_2":
+        return 5;
       default:
         return 1; // Default case
     }
@@ -90,46 +92,43 @@ export default function Home() {
       setValue(tempGrade, tempImgSrc);
       return;
     } else {
-      tempGrade = 7;
-      tempImgSrc = IMAGE_PATHS["GRADE6"];
-      setValue(tempGrade, tempImgSrc);
-    }
+      // BMI 계산
+      if (weight && height) {
+        const bmiValue = weight / ((height / 100) * (height / 100)); // cm를 m로 변환 후 BMI 계산
+        const bmiParse2 = parseFloat(bmiValue.toFixed(2));
 
-    // BMI 계산
-    if (weight && height) {
-      const bmiValue = weight / ((height / 100) * (height / 100)); // cm를 m로 변환 후 BMI 계산
-      const bmiParse2 = parseFloat(bmiValue.toFixed(2));
+        // BMI를 기준으로 한 급수 판별(소수 둘째자리에 버림)
 
-      // BMI를 기준으로 한 급수 판별(소수 둘째자리에 버림)
-
-      if (bmiParse2 >= 20 && bmiParse2 <= 24.9) {
-        tempGrade = 1;
-        tempImgSrc = IMAGE_PATHS["GRADE1"];
-      } else if (
-        (bmiParse2 >= 18.5 && bmiParse2 <= 19.9) ||
-        (bmiParse2 >= 25 && bmiParse2 <= 29.9)
-      ) {
-        tempGrade = 2;
-        tempImgSrc = IMAGE_PATHS["GRADE1"];
-      } else if (
-        (bmiParse2 >= 15 && bmiParse2 <= 18.4) ||
-        (bmiParse2 >= 30 && bmiParse2 <= 39.9)
-      ) {
-        tempGrade = 3;
-        tempImgSrc = IMAGE_PATHS["GRADE1"];
-      } else if (bmiParse2 < 15 || bmiParse2 >= 40) {
-        tempGrade = 4;
-        if (bmiParse2 < 15) {
-          //멸공
-          tempImgSrc = IMAGE_PATHS["GRADE4_1"];
+        if (bmiParse2 >= 20 && bmiParse2 <= 24.9) {
+          tempGrade = 1;
+          tempImgSrc = IMAGE_PATHS["GRADE1"];
+        } else if (
+          (bmiParse2 >= 18.5 && bmiParse2 <= 19.9) ||
+          (bmiParse2 >= 25 && bmiParse2 <= 29.9)
+        ) {
+          tempGrade = 2;
+          tempImgSrc = IMAGE_PATHS["GRADE1"];
+        } else if (
+          (bmiParse2 >= 15 && bmiParse2 <= 18.4) ||
+          (bmiParse2 >= 30 && bmiParse2 <= 39.9)
+        ) {
+          tempGrade = 3;
+          tempImgSrc = IMAGE_PATHS["GRADE1"];
+        } else if (bmiParse2 < 15 || bmiParse2 >= 40) {
+          tempGrade = 4;
+          if (bmiParse2 < 15) {
+            //멸공
+            tempImgSrc = IMAGE_PATHS["GRADE4_1"];
+          } else {
+            //돼공
+            tempImgSrc = IMAGE_PATHS["GRADE4_2"];
+          }
         } else {
-          //돼공
-          tempImgSrc = IMAGE_PATHS["GRADE4_2"];
+          tempGrade = 7;
         }
-      } else {
-        tempGrade = 7;
       }
     }
+
     setValue(tempGrade, tempImgSrc);
   };
 
@@ -146,7 +145,7 @@ export default function Home() {
     setBmi(null);
     setGrade(null);
     setShowImage(false);
-    setImageNumber(1);
+    // setImageNumber(1);
     setImgSrc("/assets/grade1");
   };
 
