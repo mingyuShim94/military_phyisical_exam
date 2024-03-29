@@ -13,17 +13,20 @@ export default function Home() {
   const [imageNumber, setImageNumber] = useState<number | undefined>(undefined); // 랜덤 이미지 번호 상태 추가
   const [imgSrc, setImgSrc] = useState<string | undefined>(undefined); // 이미지 소스 상태 추가
   // 초기 상태 설정 및 랜덤 이미지 번호 설정
-  useEffect(() => resetTest(), []);
+  useEffect(() => {
+    preloadImages(); // 이미지 프리로딩 실행
+    resetTest();
+  }, []);
 
-  // imgSrc 변경 시 랜덤 이미지 번호 업데이트
-  // useEffect(() => updateRandomImageNumber(), [showImage]);
-
-  // function updateRandomImageNumber() {
-  //   const randLength = getRandLength();
-  //   console.log(randLength);
-
-  //   setImageNumber(Math.floor(Math.random() * randLength) + 1);
-  // }
+  // 이미지 프리로딩을 위한 함수
+  const preloadImages = () => {
+    Object.values(IMAGE_PATHS).forEach((path) => {
+      for (let i = 1; i <= getImgSrcLength(path); i++) {
+        const img = new Image();
+        img.src = `${path}/${i}.webp`;
+      }
+    });
+  };
   function getImgSrcLength(imgSrc: string) {
     switch (imgSrc) {
       case "/assets/grade1":
@@ -124,14 +127,6 @@ export default function Home() {
 
     setValue(tempGrade, tempImgSrc);
   };
-
-  // function setValue(grade: number, imgSrc: string) {
-  //   console.log("grade:", grade, "imgSrc:", imgSrc);
-  //   setGrade(grade);
-  //   setImgSrc(imgSrc);
-  //   updateRandomImageNumber(); // 이미지 번호 업데이트
-  //   setShowImage(true); // 계산하기 버튼 클릭 시 이미지 표시
-  // }
 
   const setValue = (grade: number, imgSrc: string) => {
     console.log("getValue", grade, imgSrc);
