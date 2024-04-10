@@ -153,55 +153,43 @@ export default function Home() {
   const calHeightBMI = () => {};
 
   return (
-    <div>
-      <input
-        type="number"
-        value={height ?? ""} // `null`이면 빈 문자열을 사용
-        onChange={(e) => setHeight(parseFloat(e.target.value))}
-        placeholder="키(cm)"
-      />
-      <button onClick={calculateBMI}>계산하기</button>
+    <div className={styles.home}>
+      {showImage && (
+        // 이미지 컴포넌트 또는 img 태그
+        <img
+          src={`${imgSrc}/${imageNumber}.webp`}
+          alt="결과 이미지"
+          style={{ maxWidth: "100%", height: "auto" }}
+        />
+      )}
+
+      {!grade && (
+        <>
+          <h1>간편 병역 신체검사</h1>
+          <input
+            type="number"
+            value={height ?? ""} // `null`이면 빈 문자열을 사용
+            onChange={(e) => setHeight(parseFloat(e.target.value))}
+            placeholder="키(cm)"
+          />
+          <input
+            type="number"
+            value={weight ?? ""} // `null`이면 빈 문자열을 사용
+            onChange={(e) => setWeight(parseFloat(e.target.value))}
+            placeholder="몸무게(kg)"
+          />
+          <button onClick={calculateBMI}>계산하기</button>
+        </>
+      )}
+
+      {/* {bmi && <p>당신의 BMI는 {bmi} 입니다.</p>} */}
+      {grade && (
+        <>
+          <p className={styles.gradeText}>{grade}급</p>
+          <p>{getGradeDescription(grade)}</p>
+          <button onClick={resetTest}>다시 검사하기</button>
+        </>
+      )}
     </div>
   );
-
-  // return (
-  //   <div className={styles.home}>
-  //     {showImage && (
-  //       // 이미지 컴포넌트 또는 img 태그
-  //       <img
-  //         src={`${imgSrc}/${imageNumber}.webp`}
-  //         alt="결과 이미지"
-  //         style={{ maxWidth: "100%", height: "auto" }}
-  //       />
-  //     )}
-
-  //     {!grade && (
-  //       <>
-  //         <h1>간편 병역 신체검사</h1>
-  //         <input
-  //           type="number"
-  //           value={height ?? ""} // `null`이면 빈 문자열을 사용
-  //           onChange={(e) => setHeight(parseFloat(e.target.value))}
-  //           placeholder="키(cm)"
-  //         />
-  //         <input
-  //           type="number"
-  //           value={weight ?? ""} // `null`이면 빈 문자열을 사용
-  //           onChange={(e) => setWeight(parseFloat(e.target.value))}
-  //           placeholder="몸무게(kg)"
-  //         />
-  //         <button onClick={calculateBMI}>계산하기</button>
-  //       </>
-  //     )}
-
-  //     {/* {bmi && <p>당신의 BMI는 {bmi} 입니다.</p>} */}
-  //     {grade && (
-  //       <>
-  //         <p className={styles.gradeText}>{grade}급</p>
-  //         <p>{getGradeDescription(grade)}</p>
-  //         <button onClick={resetTest}>다시 검사하기</button>
-  //       </>
-  //     )}
-  //   </div>
-  // );
 }
